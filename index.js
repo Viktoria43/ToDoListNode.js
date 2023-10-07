@@ -42,6 +42,18 @@ app.post('/list', (req, res) => {
         });
 });
 
+app.delete("/list/:id",(req,res)=>{
+    const id = req.params.id;
+    list.findByIdAndDelete(id)
+    .then(result=>{
+        res.json({redirect:'/list'})
+
+    })
+        .catch(err=>{
+            console.log(err);
+        })
+})
+
 app.get((req, res) => {
     res.status(404).render('error', { title: '404' });
 });;
