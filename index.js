@@ -13,25 +13,22 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended:true}));
 app.listen(4000);
-
-app.get('/',(req,res)=>{
-    res.redirect('/all-lists')
+app.get('/', (req, res) => {
+    res.redirect('/list');
 });
 
-app.get('/list',(req,res)=>{
-    res.render('list', {title:'My List'});
-});
-
-app.get('/all-lists',(req,res)=>{
+app.get('/list', (req, res) => {
     list.find()
-        .then((result)=>{
-            res.render('index',{title:'All lists', lists:result});
+        .then((result) => {
+            res.render('list', { title: 'My List', lists: result });
         })
-        .catch((err)=>{
+        .catch((err) => {
             console.log(err);
-        })
-})
-app.post('/all-lists', (req, res) => {
+            res.status(500).send('Error retrieving lists');
+        });
+});
+
+app.post('/list', (req, res) => {
     const newList = new list(req.body);
 
     newList.save()
@@ -41,11 +38,10 @@ app.post('/all-lists', (req, res) => {
         })
         .catch((err) => {
             console.error(err);
-            // Handle errors here, e.g., render an error page
+            res.status(500).send('Error saving list');
         });
 });
 
-
 app.get((req, res) => {
     res.status(404).render('error', { title: '404' });
-});
+});;
