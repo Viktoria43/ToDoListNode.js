@@ -1,25 +1,51 @@
+
 const express = require("express");
-const List = require('./public/models/lists')
+
+const mongoose = require('mongoose');
+const list = require('./models/lists')
 const app = express();
+require('dotenv').config();
+console.log(process.env.MONGODB_URI);
+
+const mongoURI = process.env.MONGODB_URI;
+const mongoo = mongoose.connect(mongoURI, {useNewUrlParser:true, useUnifiedTopology:true}).then((result)=>console.log("CONNECTED"));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({extended:true}));
 app.listen(4000);
 
 app.get('/',(req,res)=>{
-    res.render('index', {title:'Home'});
+    res.redirect('/all-lists')
 });
 
-app.get('/lists',(req,res)=>{
+app.get('/list',(req,res)=>{
     res.render('list', {title:'My List'});
 });
-app.post("/lists",(req,res)=>{
 
-    const list = new List(req.body);
-list.save();
-
-res.send({message: 'ok'});
+app.get('/all-lists',(req,res)=>{
+    list.find()
+        .then((result)=>{
+            res.render('index',{title:'All lists', lists:result});
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
 })
-app.get((req,res)=>{
-    res.status(404).render('error',{title:'404'});
+app.post('/all-lists', (req, res) => {
+    const newList = new list(req.body);
+
+    newList.save()
+        .then((result) => {
+            console.log(result); // Optionally, log the saved result
+            res.redirect('/list'); // Redirect to the list page
+        })
+        .catch((err) => {
+            console.error(err);
+            // Handle errors here, e.g., render an error page
+        });
+});
+
+
+app.get((req, res) => {
+    res.status(404).render('error', { title: '404' });
 });

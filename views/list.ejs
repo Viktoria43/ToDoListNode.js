@@ -4,9 +4,11 @@
     <title><%= title %></title>
 </head>
 <body>
-<h1>My To-Do List</h1>
+<a href="/">My List</a>
+<h1>Create your list</h1>
 <ul>
-    <form action='/lists' method="POST">
+
+    <form action='/all-lists' method="POST">
         <input type="text" name="title" />
     <input type="submit" name="body"  value="OK" />
     </form>
